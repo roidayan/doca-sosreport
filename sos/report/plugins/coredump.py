@@ -81,7 +81,10 @@ class Coredump(Plugin, IndependentPlugin):
                 continue
             res = cinfo['output']
             if cores_collected < self.get_option("dumps"):
-                core = re.search(r"(^\s*Storage:(.*)(\(present\)))", res, re.M)
+                core = re.search(r"(^\s*Storage:(.*))", res, re.M)
+                if not core:
+                    self._log_info(f"Missing coredump entry for {pid}")
+                    continue
                 try:
                     core_path = core.groups()[1].strip()
                     # a_c_s does not return any information for a skipped file,
@@ -108,9 +111,6 @@ class Coredump(Plugin, IndependentPlugin):
                     linkpath = linkpath.replace('../', '', 1)
                     self.archive.add_link(linkpath, plugpath)
                     cores_collected += 1
-                except AttributeError:
-                    # no match on the re.search()
-                    pass
                 except Exception as err:
                     self._log_info(
                         f"Could not collect coredump for {pid} : {err}"

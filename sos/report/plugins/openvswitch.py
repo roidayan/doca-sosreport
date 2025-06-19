@@ -20,6 +20,7 @@ class OpenVSwitch(Plugin):
     profiles = ('network', 'virt')
     actl = "ovs-appctl"
     vctl = "ovs-vsctl"
+    vswitchd = "ovs-vswitchd"
     ofctl = "ovs-ofctl"
     dpctl = "ovs-dpctl"
     check_dpdk = False
@@ -372,6 +373,7 @@ class OpenVSwitch(Plugin):
         }
 
         ofp_ver_result = self.collect_cmd_output(f"{self.vctl} -t 5 --version")
+        ofp_ver_result = self.collect_cmd_output(f"{self.vswitchd} --version")
 
         # List protocols currently in use, if any
         br_info = self.collect_cmd_output(
